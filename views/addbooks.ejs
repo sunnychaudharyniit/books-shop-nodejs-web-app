@@ -1,9 +1,23 @@
 
 <div class="container"> 
 <h1>ADD BOOKS </h1>
-<ul>
-    <% drinks.forEach(function(drink) { %>
-        <li><%= drink.name %> - <%= drink.drunkness %></li>
-    <% }); %>
-</ul>
+<form method="post" action="/book/add-book" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="title">Book Title</label>
+      <input type="text" class="form-control" name="title" placeholder="title" id="title">
+    </div>
+    <div class="form-group">
+        <label for="desc">Book Description</label>
+        <textarea class="form-control" name="description" id="desc"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="pub">Publisher Description</label>
+        <input type="text" class="form-control" name="publisher" placeholder="publisher" id="pub">
+      </div>
+      <div class="form-group">
+        <label for="image">Book Image</label>
+        <input id="image" name="imgUploader"  type="file" class="form-control border-0">
+      </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
 </div>
