@@ -2,17 +2,12 @@ const express = require("express");
 const router = express.Router();
 const sqlInstance = require("mssql");
 const multer = require("multer");
-const dbConfig = require("../db/connection");
+const dbObj = require("../db/connection");
+const bcrypt = require('bcryptjs');
 const path = require("path");
+const { ensureAuthenticated } = require("../middleware/auth-middleware");
 
-const query = {
-  getAllData: "SELECT TOP(5) * FROM [dbo].[books_table]",
-  addNewBooks:
-    "INSERT INTO [dbo].[books_table] (title,publisher,description,image_url) VALUES (@title,@publisher,@description,@image_url) ",
-  deleteUser: "DELETE FROM [dbo].[books_table] WHERE name = @userName",
-  updateUserDetails:
-    "UPDATE [dbo].[books_table] SET password = @newPassword WHERE name = @userName",
-};
+
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -45,19 +40,17 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 
-router.post("/add-book", upload.single("imgUploader"), async (req, res, next) => {
-    try {
-      try {
-        
+router.post("/add-book",ensureAuthenticated, upload.single("imgUploader"), async (req, res, next) => {   
+      try {        
         sqlInstance
-          .connect(dbConfig)
+          .connect(dbObj.dbConfig)
           .then(function () {
             new sqlInstance.Request()
               .input("title", sqlInstance.VarChar, req.body.title)
               .input("description", sqlInstance.VarChar, req.body.description)
               .input("publisher", sqlInstance.VarChar, req.body.publisher)
               .input("image_url", sqlInstance.VarChar, req.file.path)
-              .query(query.addNewBooks)
+              .query(dbObj.query.addNewBooks)
               .then(function (dbData) {
                 if (dbData == null || dbData.length === 0) return {};
                 console.log(dbData); //return dbData;
@@ -73,17 +66,14 @@ router.post("/add-book", upload.single("imgUploader"), async (req, res, next) =>
       } catch (error) {
         console.log(error);
       }
-
-      res.render("addbooks", { layout: "index" });
-    } catch (err) {
-      next(err);
-    }
-  }
+      res.render("addbooks");
+    } 
 );
 
-router.get("/", async (req, res, next) => {
+router.get("/add",ensureAuthenticated, async (req, res, next) => {
+  console.log("dashbord",req.user)
   try {
-    res.render("addbooks", { layout: "index" });
+    res.render("addbooks");
   } catch (err) {
     next(err);
   }
