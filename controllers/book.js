@@ -79,4 +79,28 @@ router.get("/add",ensureAuthenticated, async (req, res, next) => {
   }
 });
 
+router.get("/books-list",ensureAuthenticated, async (req, res, next) => {  
+  try {
+    res.render("books-list");
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get("/all-books",ensureAuthenticated, async (req, res, next) => {  
+  try {
+    res.render("all-books");
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get("/cart",ensureAuthenticated, async (req, res, next) => {  
+  try {
+    res.render("cart");
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

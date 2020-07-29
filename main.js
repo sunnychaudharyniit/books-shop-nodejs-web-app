@@ -16,6 +16,7 @@ app.set("view engine","ejs");
 app.set("views",path.join(__dirname,'views'));
 app.use(expressejsLayouts)
 app.use(express.static(__dirname + '/assets'));
+app.use(express.static(__dirname + '/images'));
 app.use(bodyparser.json())
 // Express body parser
 app.use(express.urlencoded({ extended: true }));
