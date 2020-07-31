@@ -6,7 +6,7 @@ const path = require('path')
 const passport = require('passport');
 const flash = require('connect-flash');
 const session = require('express-session');
-
+const totalCartItem = require("./middleware/cart-item-middleware")
 
 require('./config/passport-auth')(passport);
 
@@ -44,7 +44,7 @@ app.use(
     res.locals.error = req.flash('error');
     next();
   });
-
+  app.use(totalCartItem)
 
 route(app) 
 

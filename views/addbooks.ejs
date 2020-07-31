@@ -1,22 +1,31 @@
 
-
-<h1>ADD BOOKS </h1>
-<form method="post" action="/book/add-book" enctype="multipart/form-data">
-    <div class="form-group">
-      <label for="title">Book Title</label>
-      <input type="text" class="form-control" name="title" placeholder="title" id="title">
-    </div>
-    <div class="form-group">
-        <label for="desc">Book Description</label>
-        <textarea class="form-control" name="description" id="desc"></textarea>
-      </div>
-      <div class="form-group">
-        <label for="pub">Publisher Description</label>
-        <input type="text" class="form-control" name="publisher" placeholder="publisher" id="pub">
-      </div>
-      <div class="form-group">
-        <label for="image">Book Image</label>
-        <input id="image" name="imgUploader"  type="file" class="form-control border-0">
-      </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-  </form>
+<div style="margin-top: 100px; margin-bottom: 120px;">
+  <h3 style="text-align: center;">ADD BOOKS </h1>
+    <form method="post" action="/book/add-book" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="title">Book Title</label>
+          <input type="text" class="form-control" name="title" placeholder="title" id="title">
+        </div>
+        <div class="form-group">
+            <label for="desc">Book Description</label>
+            <textarea class="form-control" name="description" id="desc"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="cat_id">Book Category</label>
+            <select class="form-control" name="cat_id" id="cat_id">
+              <% categoryList.forEach(function(item){ %>
+                <option value="<%= item.cat_id %>"><%= item.cat_name %></option>
+                <% }) %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="price">Book Price</label>
+            <input type="number" class="form-control" name="price" placeholder="price" id="price">
+          </div>
+          <div class="form-group">
+            <label for="image">Book Image</label>
+            <input id="image" name="imgUploader"  type="file" class="form-control border-0">
+          </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Submit</button>
+      </form>
+</div>

@@ -44,7 +44,7 @@ router.post("/register", (req, res) => {
         .then(function () {
           new sqlInstance.Request()
             .input("email", sqlInstance.VarChar, email)
-            .query(dbObj.query.getUserDetail)
+            .query(dbObj.sqlQuery.getUserDetail)
             .then((user) => {
                 console.log("USER DATA - Reg ",user.recordset[0])
               sqlInstance.close();
@@ -70,7 +70,7 @@ router.post("/register", (req, res) => {
                           .input("name", sqlInstance.VarChar, name)
                           .input("email", sqlInstance.VarChar, email)
                           .input("password", sqlInstance.VarChar, hashPassword)
-                          .query(dbObj.query.addNewUser)
+                          .query(dbObj.sqlQuery.addNewUser)
                           .then(function (dbData) {
                             if (dbData == null || dbData.length === 0)
                               return {};

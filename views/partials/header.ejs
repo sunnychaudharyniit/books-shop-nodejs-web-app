@@ -1,27 +1,40 @@
- <header class="site-header">
-        <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
-            <div class="container">
-                <a class="navbar-brand mr-4" href="#">Book Shop</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle"
-                    aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarToggle">
-                    <div class="navbar-nav mr-auto">
+<header class="site-header">
+  <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+    <div class="container">
+      <a class="navbar-brand mr-4" href="#">Book Shop</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarToggle"
+        aria-controls="navbarToggle"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarToggle">
+        <div class="navbar-nav mr-auto">
+          <% if(!isAuthenticated){ %>
+          <a class="nav-item nav-link" href="/user/login">Login</a>
+          <a class="nav-item nav-link" href="/user/register">Register</a>
+          <% } %> <% if(isAuthenticated){ %>
+          <a class="nav-item nav-link" href="/book/add">Admin</a>
+          <a class="nav-item nav-link" href="/book/products">All Books</a>
+          <a class="nav-item nav-link" href="/book/cart">Cart</a>
+          <a class="nav-item nav-link" href="/user/logout">Logout</a>
+          <% } %>
+        </div>
+        <% if(isAuthenticated){ %> <% if(typeof totalCartItems != 'undefined' ){
+        %> <% if(totalCartItems>0){ %>
+        <span class="badge badge-pill badge-light"><%= totalCartItems %></span>
+        <% } %> <% if(totalCartItems==0){ %>
+        <span class="badge badge-pill badge-light">Zero</span>
+        <% } %> <% } %>
 
-                        <% if(!isAuthenticated){ %>
-                            <a class="nav-item nav-link" href="/user/login">Login</a>
-                        <a class="nav-item nav-link" href="/user/register">Register</a>
-                            <% } %> 
-
-                            <% if(isAuthenticated){ %>
-                                <a class="nav-item nav-link" href="/book/add">Add Book</a>
-                                <a class="nav-item nav-link" href="/user/logout">Logout</a>
-                                <% } %> 
-                    </div>
-                    <span class="badge badge-pill badge-light">Zero</span>
-                    <i class="fas fa-shopping-cart" style="color:white;"></i>
-                </div>
-            </div>
-        </nav>
-    </header>
+        <i class="fas fa-shopping-cart" style="color: white;"></i>
+        <% } %>
+      </div>
+    </div>
+  </nav>
+</header>

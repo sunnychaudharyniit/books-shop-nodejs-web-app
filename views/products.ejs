@@ -1,0 +1,48 @@
+<div class="row" style="margin-bottom: 200px;">
+  <div class="col-md-4">
+    <div class="col-md-12">
+      <div class="card">
+        
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item" style="text-align: center;"><strong>Filter Books</strong></li>
+          <% categoriesList.forEach(function(item){ %>
+            <form action="/book/products" method="GET">
+              <input type="hidden" name="cat_id" value="<%= item.cat_id %>">
+            <button type="submit" class="list-group-item" style="cursor: pointer;width: 100%;"><%= item.cat_name %></button>
+          <!-- <li class="list-group-item" style="cursor: pointer;"><%= item.cat_name %></li> -->
+        </form>
+          <% }) %>
+        </ul>
+      
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <form action="/book/addToCart" method="POST">
+      <div class="row">
+        <% booksList.forEach(function(item){ %>
+          <input type="hidden" name="book_id" value="<%= item.book_id %>">
+          <input type="hidden" name="quantity" value="<%= item.quantity %>">
+          <input type="hidden" name="price_per_item" value="<%= item.price %>">
+          <input type="hidden" name="user_id" value="<%= user.User_Id %>">
+        <div class="col-md-6" style="margin-bottom: 15px;">
+          <div class="card">
+            <img
+              src="<%= item.image_url %>"
+              class="card-img-top"
+              style="max-height: 400px; height: 230px;"
+              alt="..."
+            />
+            <div class="card-body" style="text-align: center;">
+              <h5 class="card-title"><%= item.title %></h5>
+              <h5 class="card-title">$<%= item.price %></h5>
+              <button type="submit" class="btn btn-primary" style="width: 50%;">Buy</button>
+            </div>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+    </form>
+  
+  </div>
+</div>
