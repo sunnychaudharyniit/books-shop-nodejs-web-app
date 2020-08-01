@@ -46,7 +46,6 @@ router.post("/register", (req, res) => {
             .input("email", sqlInstance.VarChar, email)
             .query(dbObj.sqlQuery.getUserDetail)
             .then((user) => {
-                console.log("USER DATA - Reg ",user.recordset[0])
               sqlInstance.close();
               if (user.recordset[0]) {
                 errors.push({ msg: "Email already exists" });
@@ -107,9 +106,8 @@ router.post("/register", (req, res) => {
 });
 
 router.post("/login", (req, res, next) => {
-   // console.log('login',req.body.email)
   passport.authenticate("local", {
-    successRedirect: "/book/add",
+    successRedirect: "/book/products",
     failureRedirect: "/user/login",
     failureFlash: true,
   })(req, res, next);

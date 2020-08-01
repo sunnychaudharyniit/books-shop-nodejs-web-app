@@ -72,7 +72,7 @@ router.post(
         });
     } catch (error) {
       console.log(error);
-    }    
+    }
   }
 );
 
@@ -143,7 +143,7 @@ router.get("/products", ensureAuthenticated, async (req, res, next) => {
       const userCartItems = await new sqlInstance.Request()
         .input("user_id", sqlInstance.Int, req.user.User_Id)
         .query(dbObj.sqlQuery.getUserCartItems);
-      
+
       if (allBooks.recordset) {
         if (allBooks.recordset.length > 0) {
           if (userCartItems.recordset) {
@@ -166,7 +166,7 @@ router.get("/products", ensureAuthenticated, async (req, res, next) => {
           }
         }
       }
-      console.log(" allBooks.recordset", allBooks.recordset)
+      //console.log(" allBooks.recordset", allBooks.recordset);
       const allCategory = await new sqlInstance.Request().query(
         dbObj.sqlQuery.getAllCategory
       );
@@ -175,9 +175,9 @@ router.get("/products", ensureAuthenticated, async (req, res, next) => {
         categoriesList: allCategory.recordset,
         booksList: allBooks.recordset,
         user: req.user,
-      }; 
+      };
       //console.log(viewData, userCartItems.recordset);
-      
+
       res.render("products", viewData);
     } catch (error) {
       console.log(error);
@@ -189,30 +189,35 @@ router.get("/products", ensureAuthenticated, async (req, res, next) => {
 
 router.post("/addToCart", ensureAuthenticated, async (req, res, next) => {
   try {
-    req.body.quantity = parseInt(req.body.quantity);
     req.body.book_id = parseInt(req.body.book_id);
     req.body.price_per_item = parseInt(req.body.price_per_item);
     req.body.user_id = parseInt(req.body.user_id);
     await sqlInstance.connect(dbObj.dbConfig);
-    console.log(req.body.quantity,req.body.book_id);
-    if (req.body.quantity == 0) {
-      req.body.quantity = 1;
-      const total_price = req.body.price_per_item * req.body.quantity;
-      const cart = await new sqlInstance.Request()
-        .input("book_id", sqlInstance.Int, req.body.book_id)
-        .input("price_per_item", sqlInstance.Int, req.body.price_per_item)
-        .input("user_id", sqlInstance.Int, req.body.user_id)
-        .input("total_price", sqlInstance.Int, total_price)
-        .input("quantity", sqlInstance.Int, req.body.quantity)
-        .query(dbObj.sqlQuery.addItemToCart);
-    } else if (req.body.quantity > 0) {
-      req.body.quantity += 1;
-      const total_price = req.body.price_per_item * req.body.quantity;
-      const cart = await new sqlInstance.Request()
-        .input("book_id", sqlInstance.Int, req.body.book_id)
-        .input("total_price", sqlInstance.Int, total_price)
-        .input("quantity", sqlInstance.Int, req.body.quantity)
-        .query(dbObj.sqlQuery.updateItemToCart);
+    var bookDetail = await bookOrderDetail(req.body.book_id, req.body.user_id);
+    console.log("bookDetail.recordset",bookDetail.recordset)
+    if (bookDetail.recordset) {
+      if (bookDetail.recordset.length > 0) {
+        console.log("lenght")
+        req.body.quantity = bookDetail.recordset[0].quantity +1;
+        const total_price = bookDetail.recordset[0].price_per_item * req.body.quantity;
+        await new sqlInstance.Request()
+          .input("book_id", sqlInstance.Int, req.body.book_id)
+          .input("total_price", sqlInstance.Int, total_price)
+          .input("quantity", sqlInstance.Int, req.body.quantity)
+          .input("user_id", sqlInstance.Int, req.body.user_id)
+          .query(dbObj.sqlQuery.updateItemToCart);
+      } else {
+        console.log("no lenght")
+        req.body.quantity = 1;
+        const total_price = req.body.price_per_item * req.body.quantity;
+        await new sqlInstance.Request()
+          .input("book_id", sqlInstance.Int, req.body.book_id)
+          .input("price_per_item", sqlInstance.Int, req.body.price_per_item)
+          .input("user_id", sqlInstance.Int, req.body.user_id)
+          .input("total_price", sqlInstance.Int, total_price)
+          .input("quantity", sqlInstance.Int, req.body.quantity)
+          .query(dbObj.sqlQuery.addItemToCart);
+      }
     }
 
     sqlInstance.close();
@@ -221,6 +226,13 @@ router.post("/addToCart", ensureAuthenticated, async (req, res, next) => {
     console.log(error);
   }
 });
+
+const bookOrderDetail = async (book_id, user_id) => {
+  return await new sqlInstance.Request()
+    .input("book_id", sqlInstance.Int, book_id)
+    .input("user_id", sqlInstance.Int, user_id)
+    .query(dbObj.sqlQuery.getUserBookDetail);
+};
 
 router.get("/books-list", ensureAuthenticated, async (req, res, next) => {
   try {
@@ -232,7 +244,43 @@ router.get("/books-list", ensureAuthenticated, async (req, res, next) => {
 
 router.get("/cart", ensureAuthenticated, async (req, res, next) => {
   try {
-    res.render("cart");
+    var userCartDetails = await dbObj.userCartDetails(req.user.User_Id);
+    var data = {};
+    var totalPrice = 0;
+    if (userCartDetails.recordset) { 
+      if (userCartDetails.recordset.length > 0) { 
+        userCartDetails.recordset.map((x) => {
+          totalPrice += x.total_price;
+        });
+        data = {
+          userCartDetails: userCartDetails.recordset,
+          totalPrice,
+        };
+      }
+    }
+    res.render("cart", data);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get("/thank-you", ensureAuthenticated, async (req, res, next) => {
+  try {    
+    res.render("thank-you");
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/deleteBookOrder", ensureAuthenticated, async (req, res, next) => {
+  try {    
+    req.body.book_id = parseInt(req.body.book_id);
+    var userCartDetails = await dbObj.deleteBookOrder(
+      req.user.User_Id,
+      req.body.book_id
+    );
+
+    return res.redirect("/book/cart");
   } catch (err) {
     next(err);
   }
